@@ -116,7 +116,7 @@ export const createSatpam = async (req, res) => {
 
     const newSatpamId = await createSatpamModel(dataLaporan);
 
-    res.status(201).json({
+    return res.status(201).json({
       status: "success",
       message: "Identitas satpam berhasil dibuat",
       data: {
@@ -127,7 +127,7 @@ export const createSatpam = async (req, res) => {
     });
   } catch (error) {
     console.error("Error saat membuat laporan:", error);
-    res.status(500).json({ status: "error", message: error.message });
+    return res.status(500).json({ status: "error", message: error.message });
   }
 };
 

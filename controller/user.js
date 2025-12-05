@@ -13,12 +13,12 @@ export const REGISTER = async (req, res) => {
 
     const newUserId = await createUser(data);
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "User registered successfully",
       userId: newUserId,
     });
   } catch (error) {
-    res
+    return res
       .status(500)
       .json({ message: "Gagal mendaftar user", error: error.message });
   }
@@ -43,6 +43,8 @@ export const LOGIN = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Gagal login user", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Gagal login user", error: error.message });
   }
 };

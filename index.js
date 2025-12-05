@@ -53,6 +53,10 @@ cron.schedule("0 0 * * *", async () => {
   }
 });
 
+app.get("/", (req, res) => {
+  res.send("Welcome to the Lost and Found API!!");
+});
+
 // ... app.listen ...
 
 app.listen(port, () => {

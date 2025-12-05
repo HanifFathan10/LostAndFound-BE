@@ -70,13 +70,13 @@ export const perpanjangExp = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "success",
       message: "Masa aktif laporan berhasil diperpanjang 2 hari ke depan.",
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ status: "error", message: error.message });
+    return res.status(500).json({ status: "error", message: error.message });
   }
 };
 
@@ -155,14 +155,14 @@ export const createBarang = async (req, res) => {
 
     const newBarangId = await createBarangModel(dataLaporan);
 
-    res.status(201).json({
+    return res.status(201).json({
       status: "success",
       message: "Laporan barang berhasil dibuat",
       data: { id: newBarangId, ...dataLaporan },
     });
   } catch (error) {
     console.error("Error saat membuat laporan:", error);
-    res.status(500).json({ status: "error", message: error.message });
+    return res.status(500).json({ status: "error", message: error.message });
   }
 };
 
@@ -216,13 +216,13 @@ export const updateBarang = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "success",
       message: "Laporan barang berhasil diperbarui",
       data: { id: id, ...dataLengkap },
     });
   } catch (error) {
     console.error("Error saat update laporan:", error);
-    res.status(500).json({ status: "error", message: error.message });
+    return res.status(500).json({ status: "error", message: error.message });
   }
 };
