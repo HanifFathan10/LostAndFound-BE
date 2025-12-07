@@ -8,7 +8,10 @@ import {
 } from "../controller/barang.js";
 import uploadMiddleware from "../middleware/upload.js";
 import auth from "../middleware/auth.js";
-import { createKonfirmasi } from "../controller/konfirmasi.js";
+import {
+  createKonfirmasi,
+  updateStatusBarang,
+} from "../controller/konfirmasi.js";
 
 const router = express.Router();
 
@@ -22,5 +25,6 @@ router.post(
   [uploadMiddleware, auth],
   createKonfirmasi
 );
+router.post("/barang/ditemukan", [auth], updateStatusBarang);
 
 export default router;

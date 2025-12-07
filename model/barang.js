@@ -24,7 +24,8 @@ export const getAllBarangModel = async (search) => {
     params.push(searchTerm, searchTerm, searchTerm);
   }
 
-  sql += " ORDER BY b.created_at DESC";
+  sql +=
+    " ORDER BY FIELD(b.tipe_laporan, 'hilang', 'ditemukan', 'selesai'), b.created_at DESC";
 
   try {
     const [rows] = await db.execute(sql, params);

@@ -1,6 +1,6 @@
 import cloudinary from "../config/cloudinary.js";
 import { createKonfirmasiModel } from "../model/konfirmasi.js";
-import { getBarangByIdModel } from "../model/barang.js"; // Reuse model barang buat cek data
+import { getBarangByIdModel, updateBarangModel } from "../model/barang.js";
 
 // --- Helper Upload (Sama seperti di barang.js) ---
 const uploadToCloudinary = async (input) => {
@@ -84,6 +84,65 @@ export const createKonfirmasi = async (req, res) => {
     });
   } catch (error) {
     console.error("Error konfirmasi:", error);
+    return res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+export const updateStatusBarang = async (req, res) => {
+  const user = req.user;
+  const { id_barang, status, tipe_laporan } = req.body;
+
+  if (!id_barang) {
+    return res
+      .status(400)
+      .json({ status: "error", message: "ID Barang wajib ada." });
+  }
+  if (!status) {
+    return res
+      .status(400)
+      .json({ status: "error", message: "Status baru wajib ada." });
+  }
+
+  try {
+    const barang = await getBarangByIdModel(id_barang);
+    if (!barang) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Barang tidak ditemukan" });
+    }
+
+    if (status === "sudah selesai" && barang.id_user !== user.id) {
+      return res.status(403).json({
+        status: "error",
+        message: "Anda tidak berhak mengkonfirmasi barang ini.",
+      });
+    }
+
+    const dataUpdate = {
+      ...barang,
+      status,
+      tipe_laporan,
+    };
+
+    const affectedRows = await updateBarangModel(id_barang, dataUpdate);
+
+    if (affectedRows === 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "Gagal mengupdate status, tidak ada perubahan data.",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Status barang berhasil diperbarui.",
+      data: {
+        id_barang,
+        ...dataUpdate,
+      },
+    });
+  } catch (error) {
+    console.error("Error update status:", error);
     return res.status(500).json({ status: "error", message: error.message });
   }
 };
