@@ -150,6 +150,7 @@ export const createBarang = async (req, res) => {
       ...data,
       foto: fotoString,
       tanggal_kadaluarsa: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+      id_satpam: data.id_data_satpam || null,
       id_user: userId,
     };
 

@@ -1,18 +1,30 @@
 import db from "../config/database.js";
 
 export const getAllBarangModel = async (search) => {
-  let sql = "SELECT * FROM Barang";
+  let sql = `
+    SELECT 
+      b.*, 
+      u.nama_lengkap,
+      u.npm, 
+      u.email, 
+      u.no_hp,
+      s.nama_satpam, 
+      s.KTA
+    FROM Barang b
+    LEFT JOIN User u ON b.id_user = u.user_id
+    LEFT JOIN Satpam s ON b.id_satpam = s.satpam_id
+  `;
 
   const params = [];
 
   if (search) {
-    sql += " WHERE (judul_laporan LIKE ? OR deskripsi LIKE ? OR lokasi LIKE ?)";
-
+    sql +=
+      " WHERE (b.judul_laporan LIKE ? OR b.deskripsi LIKE ? OR b.lokasi LIKE ?)";
     const searchTerm = `%${search}%`;
     params.push(searchTerm, searchTerm, searchTerm);
   }
 
-  sql += " ORDER BY created_at DESC";
+  sql += " ORDER BY b.created_at DESC";
 
   try {
     const [rows] = await db.execute(sql, params);
@@ -24,7 +36,21 @@ export const getAllBarangModel = async (search) => {
 };
 
 export const getBarangByIdModel = async (id) => {
-  const sql = `SELECT * FROM Barang WHERE id_barang = ?`;
+  const sql = `
+    SELECT 
+      b.*, 
+      u.nama_lengkap,
+      u.npm, 
+      u.email, 
+      u.no_hp,
+      s.nama_satpam, 
+      s.KTA
+    FROM Barang b
+    LEFT JOIN User u ON b.id_user = u.user_id
+    LEFT JOIN Satpam s ON b.id_satpam = s.satpam_id
+    WHERE b.id_barang = ?
+  `;
+
   const [rows] = await db.execute(sql, [id]);
   return rows[0];
 };

@@ -8,10 +8,14 @@ import db from "./config/database.js";
 import cron from "node-cron";
 
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: [`${process.env.CLIENT_URL_PROD}`, `${process.env.CLIENT_URL_DEV}`],
+  origin: [
+    `${process.env.CLIENT_URL_PROD}`,
+    `${process.env.CLIENT_URL_DEV}`,
+    `https://28cw56c7-5173.asse.devtunnels.ms`,
+  ],
   methods: "GET, POST, PATCH, PUT, DELETE",
   allowedHeaders: "Content-Type, Authorization",
   credentials: true,
@@ -57,8 +61,10 @@ app.get("/", (req, res) => {
   res.send("Welcome to the Lost and Found API!!");
 });
 
-// ... app.listen ...
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+export default app;
