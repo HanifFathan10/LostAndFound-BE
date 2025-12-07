@@ -1,6 +1,7 @@
 import cloudinary from "../config/cloudinary.js";
 import { createKonfirmasiModel } from "../model/konfirmasi.js";
 import { getBarangByIdModel, updateBarangModel } from "../model/barang.js";
+import { getSatpamByIdModel } from "../model/satpam.js";
 
 // --- Helper Upload (Sama seperti di barang.js) ---
 const uploadToCloudinary = async (input) => {
@@ -34,6 +35,7 @@ const uploadToCloudinary = async (input) => {
 // --- Main Controller ---
 export const createKonfirmasi = async (req, res) => {
   const { id_barang } = req.params;
+  const user = req.user;
   const data = req.body;
 
   try {
@@ -51,11 +53,19 @@ export const createKonfirmasi = async (req, res) => {
       });
     }
 
+    const satpam = await getSatpamByIdModel(user);
+
+    if (!satpam) {
+      return res.status(403).json({
+        status: "Akses ditolak!!",
+        message: "Hanya satpam yang berhak mengkonfirmasi!!",
+      });
+    }
+
     let fotoUrls = [];
     if (req.files && req.files.length > 0) {
       console.log(`Mengupload ${req.files.length} bukti foto...`);
       const uploadResult = await uploadToCloudinary(req.files);
-      // Pastikan hasil selalu array
       fotoUrls = Array.isArray(uploadResult) ? uploadResult : [uploadResult];
     } else {
       return res.status(400).json({
@@ -111,7 +121,7 @@ export const updateStatusBarang = async (req, res) => {
         .json({ status: "error", message: "Barang tidak ditemukan" });
     }
 
-    if (status === "sudah selesai" && barang.id_user !== user.id) {
+    if (status === "sudah selesai" && barang.id_user !== user) {
       return res.status(403).json({
         status: "error",
         message: "Anda tidak berhak mengkonfirmasi barang ini.",

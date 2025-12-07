@@ -4,6 +4,7 @@ import {
   getAllSatpamModel,
   getSatpamByIdModel,
   deleteSatpamModel,
+  getSatpamByName,
 } from "../model/satpam.js";
 
 const uploadToCloudinary = async (input) => {
@@ -81,8 +82,8 @@ export const getSatpamById = async (req, res) => {
       data: satpam,
     });
   } catch (error) {
-    return res.status(400).json({
-      status: "error",
+    return res.status(500).json({
+      status: error.status,
       message: error.message,
     });
   }

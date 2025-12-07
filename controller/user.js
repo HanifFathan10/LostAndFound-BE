@@ -30,6 +30,15 @@ export const LOGIN = async (req, res) => {
 
     const user = await loginUser(data);
 
+    if (!user) {
+      return res
+        .status(400)
+        .json({
+          status: 400,
+          message: "user dengan email ini tidak ditemukan!",
+        });
+    }
+
     const payload = {
       id: user.user_id,
       role: user.role,

@@ -21,6 +21,13 @@ export const getAllSatpamModel = async (search) => {
   }
 };
 
+export const getSatpamByName = async (name) => {
+  const sql = `SELECT * FROM Satpam WHERE nama_satpam = ?`;
+  const [rows] = await db.execute(sql, [name]);
+
+  return rows[0] || null;
+};
+
 export const getSatpamByIdModel = async (id) => {
   const sql = `SELECT * FROM Satpam WHERE satpam_id = ?`;
   const [rows] = await db.execute(sql, [id]);
