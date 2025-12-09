@@ -1,26 +1,44 @@
-import { createUser, getUserByEmail, loginUser } from "../model/user.js";
+import {
+  createUser,
+  getUserByEmail,
+  getUserByNpm,
+  loginUser,
+  logoutUser,
+} from "../model/user.js";
 import { CreateAccessToken } from "../utils/jwt.js";
 
 export const REGISTER = async (req, res) => {
   try {
     const data = req.body;
 
-    const existingUser = await getUserByEmail(data.email);
+    const userByEmail = await getUserByEmail(data.email);
+    if (userByEmail) {
+      return res
+        .status(400)
+        .json({ status: 400, message: "Email sudah digunakan!" });
+    }
 
-    if (existingUser) {
-      return res.status(400).json({ message: "Email sudah terdaftar!!" });
+    const userByNpm = await getUserByNpm(data.npm);
+    if (userByNpm) {
+      return res.status(400).json({
+        status: 400,
+        message: "NPM sudah digunakan, tidak boleh duplikat!",
+      });
     }
 
     const newUserId = await createUser(data);
 
     return res.status(201).json({
+      status: "success",
       message: "User registered successfully",
       userId: newUserId,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Gagal mendaftar user", error: error.message });
+    return res.status(500).json({
+      status: "error",
+      message: "Gagal mendaftar user",
+      error: error.message,
+    });
   }
 };
 
@@ -31,12 +49,10 @@ export const LOGIN = async (req, res) => {
     const user = await loginUser(data);
 
     if (!user) {
-      return res
-        .status(400)
-        .json({
-          status: 400,
-          message: "user dengan email ini tidak ditemukan!",
-        });
+      return res.status(400).json({
+        status: 400,
+        message: "user dengan email ini tidak ditemukan!",
+      });
     }
 
     const payload = {
@@ -52,8 +68,31 @@ export const LOGIN = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
   } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Gagal login user",
+      error: error.message,
+    });
+  }
+};
+
+export const LOGOUT = async (req, res) => {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      return res.sendStatus(204);
+    }
+
+    await logoutUser(user);
+
     return res
-      .status(500)
-      .json({ message: "Gagal login user", error: error.message });
+      .status(200)
+      .json({ status: "success", message: "Berhasil logout" });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Gagal logout",
+      error: error.message,
+    });
   }
 };

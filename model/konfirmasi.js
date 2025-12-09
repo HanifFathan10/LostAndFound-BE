@@ -1,5 +1,32 @@
 import db from "../config/database.js";
 
+export const getAllKonfirmasiBarangModel = async (search) => {
+  let sql = "SELECT * FROM KonfirmasiPengambilan";
+
+  const params = [];
+
+  if (search) {
+    sql += " WHERE (nama_pengambil LIKE ? OR KTA LIKE ?)";
+
+    const searchTerm = `%${search}%`;
+    params.push(searchTerm, searchTerm);
+  }
+
+  try {
+    const [rows] = await db.execute(sql, params);
+    return rows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getKonfirmasiBarangByIdModel = async (id) => {
+  const sql = `SELECT * FROM KonfirmasiPengambilan WHERE id_konfirmasi = ?`;
+  const [rows] = await db.execute(sql, [id]);
+
+  return rows[0] || null;
+};
+
 export const createKonfirmasiModel = async (data) => {
   const connection = await db.getConnection();
 

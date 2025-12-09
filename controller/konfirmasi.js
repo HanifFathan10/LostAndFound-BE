@@ -1,14 +1,17 @@
 import cloudinary from "../config/cloudinary.js";
-import { createKonfirmasiModel } from "../model/konfirmasi.js";
+import {
+  createKonfirmasiModel,
+  getAllKonfirmasiBarangModel,
+  getKonfirmasiBarangByIdModel,
+} from "../model/konfirmasi.js";
 import { getBarangByIdModel, updateBarangModel } from "../model/barang.js";
 import { getSatpamByIdModel } from "../model/satpam.js";
 
-// --- Helper Upload (Sama seperti di barang.js) ---
 const uploadToCloudinary = async (input) => {
   const uploadSingle = (buffer) =>
     new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { folder: "lost_and_found_konfirmasi" }, // Folder khusus konfirmasi
+        { folder: "lost_and_found_konfirmasi" },
         (error, result) => {
           if (error) return reject(error);
           resolve(result.secure_url);
@@ -33,6 +36,51 @@ const uploadToCloudinary = async (input) => {
 };
 
 // --- Main Controller ---
+export const getAllKonfirmasiBarang = async (req, res) => {
+  const { search } = req.query;
+
+  try {
+    const semuaKonfirmasiBarang = await getAllKonfirmasiBarangModel(search);
+
+    return res.status(200).json({
+      status: "success",
+      message: "Sukses mengambil semua data satpam",
+      data: semuaKonfirmasiBarang,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+export const getKonfirmasiBarangById = async (req, res) => {
+  try {
+    const confirmId = req.params.id;
+
+    const confirm = await getKonfirmasiBarangByIdModel(confirmId);
+
+    if (!confirm) {
+      return res.status(404).json({
+        status: "error",
+        message: "barang yang terkonfirmasi tidak ditemukan",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: `Sukses mengambil data barang dengan id ${confirm.id_konfirmasi}`,
+      data: confirm,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
 export const createKonfirmasi = async (req, res) => {
   const { id_barang } = req.params;
   const user = req.user;
@@ -88,8 +136,7 @@ export const createKonfirmasi = async (req, res) => {
 
     return res.status(201).json({
       status: "success",
-      message:
-        "Konfirmasi pengambilan berhasil disimpan. Status barang diperbarui.",
+      message: "Sipp, terimakasih pak satpam sudah konfirmasi!!",
       data: dataKonfirmasi,
     });
   } catch (error) {
@@ -145,7 +192,7 @@ export const updateStatusBarang = async (req, res) => {
 
     return res.status(200).json({
       status: "success",
-      message: "Status barang berhasil diperbarui.",
+      message: "Yeayyy, selamat barang kamu sudah kembali!!",
       data: {
         id_barang,
         ...dataUpdate,

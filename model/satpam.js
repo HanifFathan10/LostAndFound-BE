@@ -29,7 +29,8 @@ export const getSatpamByName = async (name) => {
 };
 
 export const getSatpamByIdModel = async (id) => {
-  const sql = `SELECT * FROM Satpam WHERE satpam_id = ?`;
+  console.log("🚀 ~ getSatpamByIdModel ~ id:", id);
+  const sql = `SELECT * FROM User WHERE user_id = ?`;
   const [rows] = await db.execute(sql, [id]);
   return rows[0];
 };

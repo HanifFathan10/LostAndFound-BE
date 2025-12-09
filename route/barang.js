@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createBarang,
+  deleteBarang,
   getAllBarang,
   getBarangById,
   perpanjangExp,
@@ -26,5 +27,6 @@ router.post(
   createKonfirmasi
 );
 router.post("/barang/ditemukan", [auth], updateStatusBarang);
+router.delete("/barang/:id_barang", [auth], deleteBarang);
 
 export default router;

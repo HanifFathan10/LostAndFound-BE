@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import user_router from "./route/user.js";
 import barang_router from "./route/barang.js";
 import satpam_router from "./route/satpam.js";
+import konfirmasi_router from "./route/konfirmasi.js";
 import db from "./config/database.js";
 import cron from "node-cron";
 
@@ -31,6 +32,7 @@ const jsonParser = bodyParser.json();
 app.use("/api/v1", jsonParser, user_router);
 app.use("/api/v1", jsonParser, barang_router);
 app.use("/api/v1", jsonParser, satpam_router);
+app.use("/api/v1", jsonParser, konfirmasi_router);
 
 cron.schedule("0 0 * * *", async () => {
   console.log("🔄 Menjalankan pengecekan barang expired...");

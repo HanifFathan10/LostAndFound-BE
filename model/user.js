@@ -14,6 +14,13 @@ export const getUserByEmail = async (email) => {
   return rows[0] || null;
 };
 
+export const getUserByNpm = async (npm) => {
+  const sql = `SELECT * FROM User WHERE npm = ?`;
+  const [rows] = await db.execute(sql, [npm]);
+
+  return rows[0] || null;
+};
+
 export const createUser = async (data) => {
   const salt = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(data.password, salt);
@@ -57,6 +64,23 @@ export const loginUser = async (data) => {
     } else {
       return null;
     }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const logoutUser = async (id) => {
+  const checkUserSql = `SELECT * FROM User WHERE user_id = ?`;
+
+  try {
+    const [rows] = await db.execute(checkUserSql, [id]);
+    const user = rows[0];
+
+    if (!user) {
+      throw new Error("User tidak ditemukan, gagal logout.");
+    }
+
+    return true;
   } catch (error) {
     throw new Error(error.message);
   }
